@@ -1,0 +1,108 @@
+<html>
+<!--
+ /**
+ * index.htm is a demo file to  work with a sample API file to be called via AJAX to 
+ * deliver the contents of 2 JSON files, one of which orders the 
+ * data by popularity of device, the other by device type.
+ *
+ * The api page can be called via AJAX either via GET or POST, using a variable 
+ * named "sort":
+ *
+ * <code>
+ * api.php?sort=device_type
+ * </code>
+ *
+ * In the example above, the parameter sort is loaded with the string "device_type" 
+ * which will indicate to the API to load the JSON file containing 
+ * device_type results.
+ *
+ */
+-->
+<head>
+<title>Device Web Service Demo</title>
+<link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
+<style>
+body {font-family:'Abel';}
+#devices {
+	max-width:600px;
+	margin:5px;
+	padding:2px;
+}
+#devices > div {
+	padding:5px;
+	min-height:40px;
+	margin-bottom:5px;
+	border:1px solid #E77D2C;
+	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	position:relative; /* required to place #pic to right */
+}
+
+#devices h3 {
+	font-family:georgia;
+	padding:5px;
+	color:#fff;
+	background:#E77D2C;
+	margin:0;
+}
+
+</style>
+<script src="http://code.jquery.com/jquery-latest.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {  
+
+	$('.category').click(function(e){
+        e.preventDefault(); //stop default action of the link
+		sort = $(this).attr("href");  //get category from URL
+		loadAJAX(sort);  //load AJAX and parse JSON file
+	});
+});	
+
+
+function loadAJAX(sort)
+{
+	$.ajax({  
+		type: "GET",
+		dataType: "json",  
+		url: "api.php?sort=" + sort,
+		success: deviceJSON,
+	});
+
+	$('#films').html('');//clear data
+}
+
+
+function deviceJSON(data){
+	var header = data.title;
+	$('#devicetitle').html(header);
+	$('#devices').html("");
+	$.each(data.devices, function(i,item){
+	
+		var text = '<b>Vendor</b>: ' + item.hardware_vendor + '<br />';
+		text += '<b>Device Type</b>: ' + item.device_type+ '<br />';
+		text += '<b>Browser</b>: ' + item.browser_name + '<br />';
+		text += '<b>Camera Enabled?</b>: ' + item.has_camera + '<br />';
+		text += '<b>Touch Screen Enabled?</b>: ' + item.has_touch_screen + '<br />';
+		text += '<b>HTML Version</b>: ' + item.html_version + '<br />';
+		text += '<b>Smart Phone?</b>: ' + item.is_smart_phone + '<br />';
+		text += '<b>Layout Engine</b>: ' + item.layout_engine + '<br />';
+		text += '<b>Screen Pixel Width</b>: ' + item.screen_pixels_width + '<br />';
+		text += '<b>Screen Pixel Height</b>: ' + item.screen_pixels_height + '<br/></div>';
+		$('<div></div>').html(text).appendTo('#devices');  
+	});
+}
+
+</script>
+</head>
+	<body>
+	<h1>Device Web Service Demo</h1>
+		<a href="default" class="category">Auto Shopper Devices By Popularity</a><br />
+		<a href="device_type" class="category">Auto Shopper Devices By Device Type</a>
+		<h3 id="devicetitle">Title Will Go Here</h3>
+		<div id="devices">
+			<p>Devices will go here</p>
+		</div>
+	</body>
+</html>
